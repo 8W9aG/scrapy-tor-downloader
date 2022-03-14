@@ -10,7 +10,7 @@ Scrapy middleware with TOR support for more robust scrapers or anonymous scrapin
 
 * [Python 3.7](https://www.python.org/downloads/release/python-370/)
 * [Scrapy 2.6.1](https://scrapy.org/)
-* [torpy 1.1.6](hhttps://github.com/torpyorg/torpy)
+* [torpy 1.1.6](https://github.com/torpyorg/torpy)
 
 ## Installation :inbox_tray:
 
