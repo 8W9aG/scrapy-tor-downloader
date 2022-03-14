@@ -1,2 +1,2 @@
 scrapy>=2.6.1
-torpy>=1.1.6
+torpy[requests]>=1.1.6

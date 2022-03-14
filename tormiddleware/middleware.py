@@ -1,5 +1,6 @@
 """The middleware for scrapy-tor-downloader."""
 import http
+import urllib
 
 import scrapy
 import tldextract
@@ -59,6 +60,23 @@ class TORDownloaderMiddleware:
         # - or raise IgnoreRequest: process_exception() methods of
         #   installed downloader middleware will be called
         if self.should_process_request(request, spider):
+            tor2web_proxy = request.meta.get("tor2web_proxy", spider.settings.get("TOR2WEB_PROXY", None))
+            if tor2web_proxy is not None and self.should_process_request(request.url):
+                proxy_parse = urllib.parse.urlparse(tor2web_proxy)
+                parse = urllib.parse.urlparse(request.url)
+                extracted = tldextract.extract(request.url)
+                proxy_extracted = tldextract.extract(tor2web_proxy)
+                request.url = urllib.parse.urlunparse(
+                    (
+                        proxy_parse[0],
+                        ".".join([extracted.subdomain, proxy_extracted.domain, proxy_extracted.suffix]),
+                        parse[2],
+                        parse[3],
+                        parse[4],
+                        parse[5],
+                    )
+                )
+                return request
             return self.perform_tor_request(request)
         return None
 

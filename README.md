@@ -32,6 +32,12 @@ Whether TOR is used when a request fails as a fallback (defaults to true).
 
 Meta field to enable/disable this per request is: `tor_fallback_enabled`
 
+### TOR2WEB_PROXY
+
+Whether a [tor2web](https://www.tor2web.org/) proxy is used for onion address. The value of this setting is the domain for the proxy.
+
+Meta field to add this per request is: `tor2web_proxy`
+
 ## Usage example :eyes:
 
 In order to use this plugin simply add the following settings and substitute your variables:
@@ -52,6 +58,12 @@ This will make every request hit TOR for a response. If you have turned the prox
 
 ```py
 TOR_FALLBACK_ENABLED = False
+```
+
+If you want to make use of [tor2web](https://www.tor2web.org/) proxies for onion addresses, you can add it to the settings like so:
+
+```py
+TOR2WEB_PROXY = "https://onion.moe"
 ```
 
 ## License :memo:
