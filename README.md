@@ -9,7 +9,7 @@ Scrapy middleware with TOR support for more robust scrapers or anonymous scrapin
 ## Dependencies :globe_with_meridians:
 
 * [Python 3.7](https://www.python.org/downloads/release/python-370/)
-* [Scrapy 2.6.1](https://scrapy.org/)
+* [Scrapy 2.4.0](https://scrapy.org/)
 * [torpy 1.1.6](https://github.com/torpyorg/torpy)
 
 ## Installation :inbox_tray:

@@ -1,2 +1,2 @@
-scrapy>=2.6.1
+scrapy>=2.4.0
 torpy[requests]>=1.1.6
