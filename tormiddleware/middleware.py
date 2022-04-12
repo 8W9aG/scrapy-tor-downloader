@@ -4,7 +4,8 @@ import urllib
 
 import scrapy
 import tldextract
-from torpy.http.requests import tor_requests_session
+from torpy.http.requests import TorRequests
+import requests
 
 from .response import TORResponse
 
@@ -16,6 +17,7 @@ class TORDownloaderMiddleware:
         # This method is used by Scrapy to create your spiders.
         s = cls()
         crawler.signals.connect(s.spider_opened, signal=scrapy.signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=scrapy.signals.spider_closed)
         return s
 
     def should_process_url(self, url: str) -> bool:
@@ -32,22 +34,33 @@ class TORDownloaderMiddleware:
 
     def perform_tor_request(self, request: scrapy.Request) -> scrapy.http.Response:
         """Perform a TOR request using a scrapy request."""
-        with self.session as tor_session:
-            method_function = getattr(tor_session, request.method.lower())
-            body = request.body
-            if isinstance(body, str):
-                body = body.encode("utf8")
-            response = method_function(
-                request.url,
-                headers={x.decode(): request.headers[x].decode() for x in request.headers},
-                cookies=request.cookies,
-                data=body)
-            return TORResponse(
-                request.url,
-                status=response.status_code,
-                headers=response.headers,
-                body=response.content,
-                request=request)
+        if request.meta.get("tor_reset_session", False):
+            if self.session is not None:
+                self.session.__exit__(None, None, None)
+            self.session = None
+        if self.session is None:
+            self.session = TorRequests().__enter__()
+        try:
+            with self.session.get_session(retries=3) as tor_session:
+                method_function = getattr(tor_session, request.method.lower())
+                body = request.body
+                if isinstance(body, str):
+                    body = body.encode("utf8")
+                response = method_function(
+                    request.url,
+                    headers={x.decode(): request.headers[x].decode() for x in request.headers},
+                    cookies=request.cookies,
+                    data=body)
+                return TORResponse(
+                    request.url,
+                    status=response.status_code,
+                    headers=response.headers,
+                    body=response.content,
+                    request=request)
+        except requests.exceptions.ConnectionError:
+            self.session.__exit__(None, None, None)
+            self.session = None
+            raise scrapy.exceptions.IgnoreRequest()
 
     def process_request(self, request, spider):
         # Called for each request that goes through the downloader
@@ -103,5 +116,7 @@ class TORDownloaderMiddleware:
         pass
 
     def spider_opened(self, spider):
-        spider.logger.info('Spider opened: %s' % spider.name)
-        self.session = tor_requests_session()
+        self.session = TorRequests().__enter__()
+
+    def spider_closed(self, spider):
+        self.session.__exit__(None, None, None)

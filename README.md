@@ -38,6 +38,10 @@ Whether a [tor2web](https://www.tor2web.org/) proxy is used for onion address. T
 
 Meta field to add this per request is: `tor2web_proxy`
 
+### tor_reset_session
+
+Whether to reset the TOR session before processing the request. This field only exists in the meta on the request as `tor_reset_session` and is a boolean.
+
 ## Usage example :eyes:
 
 In order to use this plugin simply add the following settings and substitute your variables:

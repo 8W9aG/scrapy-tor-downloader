@@ -23,7 +23,7 @@ def install_requires() -> typing.List[str]:
 
 setup(
     name='scrapy-tor-downloader',
-    version='1.0.3',
+    version='1.0.4',
     description='Scrapy middleware with TOR support for more robust scrapers or anonymous scraping.',
     long_description=long_description,
     long_description_content_type='text/markdown',
